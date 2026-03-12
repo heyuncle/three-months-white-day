@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'game',
-    'django_distill',
 ]
 
 MIDDLEWARE = [
@@ -117,5 +116,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# directory used by collectstatic and distill-local export
+# directory used by collectstatic (optional)
 STATIC_ROOT = BASE_DIR / 'staticfiles'

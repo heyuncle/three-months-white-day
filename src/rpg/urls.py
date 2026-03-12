@@ -16,12 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django_distill import distill_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('game.urls')),
 ]
-
-# specify the list of URLs to export; django-distill will introspect urlpatterns
-DISTILL_DIR = 'exported'
