@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <title>Step 1</title>
+    <style>
+        @font-face {
+            font-family: 'Stardew';
+            src: url("/static/game/StardewValley.ttf") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body { 
+            font-family: 'Stardew', monospace; 
+            background: url("/static/game/background.png") repeat-x center center;
+            background-size: auto 100vh; /* ensure fills viewport height */
+            min-height: 100vh; /* make body full height */
+            color: #eee; 
+            margin:0; 
+            animation: scroll-bg 960s linear infinite;
+        }
+        #sprite-container { height: 150px; display: flex; align-items: center; justify-content: center; }
+        #text-box { 
+            padding: 5%; /* 10% margin inside box */
+            cursor: pointer; 
+            --box-w: 66vw;
+            width: var(--box-w); 
+            max-width: 800px;
+            aspect-ratio: 9 / 5;
+            /* if aspect-ratio not supported, ensure min-height fallback */
+            height: auto;
+            margin: 20px auto;
+            box-sizing: border-box;
+            background: url("/static/game/textbox.png") no-repeat center/contain;
+            color: #5E190C;
+            display: flex;
+            align-items: flex-start; /* vertical start */
+            justify-content: flex-start; /* horizontal start */
+            text-align: left;
+            /* font-size proportional to actual box width */
+            font-size: calc(var(--box-w) * 0.05);
+            line-height: 1.4;
+        }
+        /* #text-box:hover { background: #444; } */
+        #sprite-container img.sprite { max-height: 100%; margin: 20px 10px 0; }
+        @keyframes scroll-bg {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 0; }
+        }
+        /* bobbing animation for talking sprites */
+        @keyframes bob {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .talking { animation: bob 0.5s infinite; }
+    </style>
+</head>
+<body>
+    
+    <div id="sprite-container">
+        <img id="sprite-C" data-speaker="C" src="/static/game/C.png" alt="C sprite" class="sprite">
+        <img id="sprite-M" data-speaker="M" src="/static/game/M.png" alt="M sprite" class="sprite">
+    </div>
+    <div id="text-box">Click to begin</div>
+
+    <script id="lines-data" type="application/json">[["C", "Welcome to the RPG world!"], ["M", "The journey begins with a single step."], ["C", "Click to continue the adventure..."]]</script>
+
+    <div id="answer-container" style="display:none; text-align:center; margin-top:20px;">
+        <form id="answer-form">
+            <input type="text" id="answer-input" placeholder="Type answer" />
+            <button type="submit">Submit</button>
+        </form>
+        <div id="answer-result" style="margin-top:10px;color:#ffd; font-weight:bold;"></div>
+    </div>
+
+    <script>
+        // parse text lines from JSON embedded in page
+        const rawLines = JSON.parse(document.getElementById('lines-data').textContent);
+        // each element is [speaker, text]
+        const lines = rawLines.map(([s, t]) => `${s}: ${t}`);
+        let currentLine = 0;
+        let typing = false;
+        let typingTimeout = null;
+        const box = document.getElementById('text-box');
+        box.addEventListener('click', advance);
+
+        function animateSpeaker(speaker) {
+            // clear both
+            document.querySelectorAll('#sprite-container img').forEach(img => img.classList.remove('talking'));
+            const active = document.querySelector(`#sprite-container img[data-speaker="${speaker}"]`);
+            if (active) active.classList.add('talking');
+        }
+
+        function advance() {
+            // if we're already through all lines, nothing to do
+            if (currentLine >= rawLines.length) return;
+            // if typing is in progress, abort and jump to next line
+            if (typing) {
+                clearTimeout(typingTimeout);
+                typing = false;
+                // special case: last line is currently typing
+                if (currentLine === rawLines.length - 1) {
+                    // immediately complete the last line and show form
+                    const [speaker, text] = rawLines[currentLine];
+                    const full = `${speaker}: ${text}`;
+                    box.textContent = full;
+                    // stop bobbing
+                    document.querySelectorAll('#sprite-container img')
+                            .forEach(img => img.classList.remove('talking'));
+                    // disable further clicks and show answer form
+                    box.style.pointerEvents = 'none';
+                    document.getElementById('answer-container').style.display = 'block';
+                    currentLine += 1;
+                    return;
+                }
+                currentLine += 1;
+            }
+            if (currentLine >= rawLines.length) return;
+            const [speaker, text] = rawLines[currentLine];
+            animateSpeaker(speaker);
+            const full = `${speaker}: ${text}`;
+            typeWriter(full, 0, () => {
+                currentLine += 1;
+                if (currentLine < rawLines.length) {
+                    // wait for next click
+                } else {
+                    // final line has been shown; animation already cleared by typeWriter
+                    // disable further clicks
+                    box.style.pointerEvents = 'none';
+                    // show answer form
+                    document.getElementById('answer-container').style.display = 'block';
+                }
+            });
+        }
+
+        function typeWriter(text, i, callback) {
+            typing = true;
+            if (i < text.length) {
+                box.textContent = text.substring(0, i+1);
+                typingTimeout = setTimeout(() => typeWriter(text, i+1, callback), 50);
+            } else {
+                // finished typing current line; stop bobbing animation
+                typing = false;
+                document.querySelectorAll('#sprite-container img')
+                        .forEach(img => img.classList.remove('talking'));
+                if (callback) callback();
+            }
+        }
+        
+        // answer form logic
+        document.getElementById('answer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const answer = document.getElementById('answer-input').value.trim();
+            const result = document.getElementById('answer-result');
+            if (answer.toLowerCase() === 'test') {
+                result.textContent = 'Correct answer!';
+                result.style.color = '#0f0';
+            } else {
+                result.textContent = 'Incorrect answer!';
+                result.style.color = '#f00';
+            }
+        });
+    </script>
+</body>
+</html>
