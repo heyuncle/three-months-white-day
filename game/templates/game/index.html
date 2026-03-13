@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Part 1</title>
+    <title>我有星瘾</title>
     <style>
         @font-face {
             font-family: 'Stardew';
@@ -46,11 +46,12 @@
         }
 
         #nazo-image {
+            display: none;
             width: var(--box-w);
             max-width: 800px;
             aspect-ratio: 16 / 9;
             margin: 20px auto;
-            background: url("{% static 'game/nazo1.png' %}") no-repeat center/cover;
+            background: url("{% static nazo_image %}") no-repeat center/cover;
         }
 
         /* #text-box:hover { background: #444; } */
@@ -92,9 +93,12 @@
         const rawLines = JSON.parse(document.getElementById('lines-data').textContent);
         // each element is [speaker, text]
         const lines = rawLines.map(([s, t]) => `${s}: ${t}`);
+        const correctAnswer = "{{ correct_answer|escapejs }}".toLowerCase();
+        const redirectUrl = "{{ redirect_url|escapejs }}";
         let currentLine = 0;
         let typing = false;
         let typingTimeout = null;
+        let redirectTimeout = null;
         const box = document.getElementById('text-box');
         box.addEventListener('click', advance);
 
@@ -121,8 +125,9 @@
                     // stop bobbing
                     document.querySelectorAll('#sprite-container img')
                             .forEach(img => img.classList.remove('talking'));
-                    // disable further clicks and show answer form
+                    // disable further clicks and show puzzle image + answer form
                     box.style.pointerEvents = 'none';
+                    showNazoImage();
                     document.getElementById('answer-container').style.display = 'block';
                     currentLine += 1;
                     return;
@@ -141,10 +146,16 @@
                     // final line has been shown; animation already cleared by typeWriter
                     // disable further clicks
                     box.style.pointerEvents = 'none';
-                    // show answer form
+                    // show the puzzle image and answer form
+                    showNazoImage();
                     document.getElementById('answer-container').style.display = 'block';
                 }
             });
+        }
+
+        function showNazoImage() {
+            const nazo = document.getElementById('nazo-image');
+            if (nazo) nazo.style.display = 'block';
         }
 
         function typeWriter(text, i, callback) {
@@ -166,12 +177,20 @@
             e.preventDefault();
             const answer = document.getElementById('answer-input').value.trim();
             const result = document.getElementById('answer-result');
-            if (answer.toLowerCase() === 'test') {
+            if (answer.toLowerCase() === correctAnswer) {
                 result.textContent = 'Correct answer!';
                 result.style.color = '#0f0';
+                if (redirectTimeout) clearTimeout(redirectTimeout);
+                redirectTimeout = setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 2000);
             } else {
                 result.textContent = 'Incorrect answer!';
                 result.style.color = '#f00';
+                if (redirectTimeout) {
+                    clearTimeout(redirectTimeout);
+                    redirectTimeout = null;
+                }
             }
         });
     </script>
