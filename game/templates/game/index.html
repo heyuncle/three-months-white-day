@@ -85,10 +85,9 @@
             <input type="text" id="answer-input" placeholder="Type answer" />
             <button type="submit">Submit</button>
         </form>
-        <div id="answer-result" style="margin-top:10px;color:#ffd; font-weight:bold;"></div>
-    </div>
-
-    <script>
+            <div id="answer-result" style="margin-top:10px; color:#ffd; font-weight:bold; background: rgba(255, 255, 255, 0.85); padding: 6px 10px; border-radius: 8px; display: inline-block;"></div>
+        
+        <script>
         // parse text lines from JSON embedded in page
         const rawLines = JSON.parse(document.getElementById('lines-data').textContent);
         // each element is [speaker, text]
@@ -177,13 +176,20 @@
             e.preventDefault();
             const answer = document.getElementById('answer-input').value.trim();
             const result = document.getElementById('answer-result');
+            // Special handling for index4 (whiteday)
+            const isWhiteday = correctAnswer === 'whiteday';
             if (answer.toLowerCase() === correctAnswer) {
-                result.textContent = 'Correct answer!';
-                result.style.color = '#0f0';
-                if (redirectTimeout) clearTimeout(redirectTimeout);
-                redirectTimeout = setTimeout(() => {
-                    window.location.href = redirectUrl;
-                }, 2000);
+                if (isWhiteday) {
+                    result.textContent = 'Correct, but come back tomorrow!';
+                    result.style.color = 'orange';
+                } else {
+                    result.textContent = '{{ correct_message|escapejs }}';
+                    result.style.color = '{{ correct_color|escapejs }}';
+                    if (redirectTimeout) clearTimeout(redirectTimeout);
+                    redirectTimeout = setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 2000);
+                }
             } else {
                 result.textContent = 'Incorrect answer!';
                 result.style.color = '#f00';

@@ -28,6 +28,8 @@ def index(request):
         'text_lines': text_lines,
         'nazo_image': 'game/nazo1.png',
         'correct_answer': 'sukida',
+        'correct_message': 'Correct answer!',
+        'correct_color': '#0f0',
         'redirect_url': reverse('index2'),
     })
 
@@ -73,7 +75,9 @@ def index4(request):
     return render(request, 'game/index.html', {
         'text_lines': text_lines,
         'nazo_image': 'game/nazo4.png',
-        'correct_answer': 'disabled',
+        'correct_answer': 'whiteday',
+        'correct_message': 'Correct, but come back tomorrow!',
+        'correct_color': 'orange',
         'redirect_url': reverse('index5'),
     })
 
