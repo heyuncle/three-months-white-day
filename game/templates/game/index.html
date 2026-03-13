@@ -12,6 +12,8 @@
             font-style: normal;
         }
         body { 
+            /* enforce a consistent layout size variable for all containers */
+            --box-w: 66vw;
             font-family: 'Stardew', monospace; 
             background: url("{% static 'game/background.png' %}") repeat-x center center;
             background-size: auto 100vh; /* ensure fills viewport height */
