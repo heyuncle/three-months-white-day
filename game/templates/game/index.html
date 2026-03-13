@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>RPG Demo</title>
+    <title>Part 1</title>
     <style>
         @font-face {
             font-family: 'Stardew';
@@ -42,6 +42,15 @@
             font-size: calc(var(--box-w) * 0.05);
             line-height: 1.4;
         }
+
+        #nazo-image {
+            width: var(--box-w);
+            max-width: 800px;
+            aspect-ratio: 16 / 9;
+            margin: 20px auto;
+            background: url("{% static 'game/nazo1.png' %}") no-repeat center/cover;
+        }
+
         /* #text-box:hover { background: #444; } */
         #sprite-container img.sprite { max-height: 100%; margin: 20px 10px 0; }
         @keyframes scroll-bg {
@@ -63,6 +72,8 @@
         <img id="sprite-M" data-speaker="M" src="{% static 'game/M.png' %}" alt="M sprite" class="sprite">
     </div>
     <div id="text-box">Click to begin</div>
+
+    <div id="nazo-image" aria-hidden="true"></div>
 
     {{ text_lines|json_script:"lines-data" }}
 
