@@ -94,6 +94,7 @@
         const lines = rawLines.map(([s, t]) => `${s}: ${t}`);
         const correctAnswer = "{{ correct_answer|escapejs }}".toLowerCase();
         const redirectUrl = "{{ redirect_url|escapejs }}";
+        // const finalPage = "{{ final_page|escapejs }}";
         let currentLine = 0;
         let typing = false;
         let typingTimeout = null;
@@ -147,7 +148,9 @@
                     box.style.pointerEvents = 'none';
                     // show the puzzle image and answer form
                     showNazoImage();
-                    document.getElementById('answer-container').style.display = 'block';
+                    // if (not finalPage) {
+                        document.getElementById('answer-container').style.display = 'block';
+                    // }
                 }
             });
         }
@@ -171,34 +174,27 @@
             }
         }
         
-        // answer form logic
-        document.getElementById('answer-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const answer = document.getElementById('answer-input').value.trim();
-            const result = document.getElementById('answer-result');
-            // Special handling for index4 (whiteday)
-            const isWhiteday = correctAnswer === 'whiteday';
-            if (answer.toLowerCase() === correctAnswer) {
-                if (isWhiteday) {
-                    result.textContent = 'Correct, but come back tomorrow!';
-                    result.style.color = 'orange';
-                } else {
-                    result.textContent = '{{ correct_message|escapejs }}';
-                    result.style.color = '{{ correct_color|escapejs }}';
-                    if (redirectTimeout) clearTimeout(redirectTimeout);
-                    redirectTimeout = setTimeout(() => {
-                        window.location.href = redirectUrl;
-                    }, 2000);
-                }
-            } else {
-                result.textContent = 'Incorrect answer!';
-                result.style.color = '#f00';
-                if (redirectTimeout) {
-                    clearTimeout(redirectTimeout);
-                    redirectTimeout = null;
-                }
+    // answer form logic
+    document.getElementById('answer-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const answer = document.getElementById('answer-input').value.trim();
+        const result = document.getElementById('answer-result');
+        if (answer.toLowerCase() === correctAnswer) {
+            result.textContent = 'Correct answer!';
+            result.style.color = '#0f0';
+            if (redirectTimeout) clearTimeout(redirectTimeout);
+            redirectTimeout = setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 2000);
+        } else {
+            result.textContent = 'Incorrect answer!';
+            result.style.color = '#f00';
+            if (redirectTimeout) {
+                clearTimeout(redirectTimeout);
+                redirectTimeout = null;
             }
-        });
+        }
+    });
     </script>
 </body>
 </html>

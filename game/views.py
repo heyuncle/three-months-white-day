@@ -31,6 +31,7 @@ def index(request):
         'correct_message': 'Correct answer!',
         'correct_color': '#0f0',
         'redirect_url': reverse('index2'),
+        'final_page': False,
     })
 
 
@@ -47,6 +48,7 @@ def index2(request):
         'nazo_image': 'game/nazo2.png',
         'correct_answer': 'banksy',
         'redirect_url': reverse('index3'),
+        'final_page': False,
     })
 
 
@@ -62,6 +64,7 @@ def index3(request):
         'nazo_image': 'game/nazo3.png',
         'correct_answer': 'anniversary',
         'redirect_url': reverse('index4'),
+        'final_page': False,
     })
 
 def index4(request):
@@ -79,15 +82,37 @@ def index4(request):
         'correct_message': 'Correct, but come back tomorrow!',
         'correct_color': 'orange',
         'redirect_url': reverse('index5'),
+        'final_page': False,
     })
 
 def index5(request):
     text_lines = [
-        ("C", "come back tomorrow!")
+        ("C", "happy white day!! well, now that it's almost over, i have some kind of secret i will share with you."),
+        ("M", "oh, what kind of secret?"),
+        ("C", "i really am happy to share because it's a wonderful surprise to see your shoes and your spirits rise"),
+        ("M", "my... shoes?"),
+        ("C", "yes! so don't walk away, don't walk away!"),
+        ("M", "i won't!"),
+        ("C", "because walking back to you is the hardest thing that i can do"),
+        ("M", "......"),
+        ("C", "but really, i just want to kiss you in new places."),
+        ("M", "why are you saying strange things all of a sudden?"),
     ]
     return render(request, 'game/index.html', {
         'text_lines': text_lines,
-        'nazo_image': 'game/nazo4.png',
-        'correct_answer': 'disabled',
-        'redirect_url': reverse('index5'),
+        'nazo_image': 'game/nazo5.png',
+        'correct_answer': 'jelly',
+        'redirect_url': reverse('index6'),
+        'final_page': False,
+    })
+
+def index6(request):
+    # Final page, no submission form
+    text_lines = [
+        ("C", "happy anniversary and white day!!! i love you!!!")
+    ]
+    return render(request, 'game/index.html', {
+        'text_lines': text_lines,
+        'nazo_image': 'game/final.png',  # You can use a special final image or leave as None
+        'final_page': True,              # Add a flag to hide the submission form in the template
     })
