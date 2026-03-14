@@ -104,6 +104,7 @@ def index5(request):
         'correct_answer': 'jelly',
         'redirect_url': reverse('index6'),
         'final_page': False,
+        'background_image': 'game/background2.png',
     })
 
 def index6(request):
@@ -115,4 +116,5 @@ def index6(request):
         'text_lines': text_lines,
         'nazo_image': 'game/final.png',  # You can use a special final image or leave as None
         'final_page': True,              # Add a flag to hide the submission form in the template
+        'background_image': 'game/background2.png',
     })
