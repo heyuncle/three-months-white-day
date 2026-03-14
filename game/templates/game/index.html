@@ -80,12 +80,14 @@
 
     {{ text_lines|json_script:"lines-data" }}
 
+    {% if not final_page %}
     <div id="answer-container" style="display:none; text-align:center; margin-top:20px;">
         <form id="answer-form">
             <input type="text" id="answer-input" placeholder="Type answer" />
             <button type="submit">Submit</button>
         </form>
             <div id="answer-result" style="margin-top:10px; color:#ffd; font-weight:bold; background: rgba(255, 255, 255, 0.85); padding: 6px 10px; border-radius: 8px; display: inline-block;"></div>
+    {% endif %}
         
         <script>
         // parse text lines from JSON embedded in page
